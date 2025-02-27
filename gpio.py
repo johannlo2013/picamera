@@ -6,4 +6,5 @@ button = Button(21)
 
 while True:
         button.wait_for_press()
-        print ("Button pressed.")
+        print("Button pressed.")
+        time.sleep(2)
