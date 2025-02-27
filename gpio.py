@@ -2,7 +2,7 @@
 from gpiozero import Button
 import time
 
-button = Button(21)
+button = Button(16)
 
 while True:
         button.wait_for_press()
