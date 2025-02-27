@@ -4,7 +4,7 @@ from libcamera import controls
 from picamera2 import Picamera2, Preview
 import time
 
-button = Button(21)
+button = Button(16)
 
 with Picamera2() as picam2:
     frame = int(time.time())
