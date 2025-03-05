@@ -1,10 +1,18 @@
 #!/usr/bin/env python3
+import os
 from gpiozero import Button
-from libcamera import controls
 from picamera2 import Picamera2, Preview
 import time
 
-button = Button(16)
+# Directory where images will be saved
+picture_dir = '/home/mashedpotatoes/picamera/pictures'
+
+# Check if the directory exists, create it if it doesn't
+if not os.path.exists(picture_dir):
+    os.makedirs(picture_dir)
+    print(f"Directory {picture_dir} created.")
+
+button = Button(21)
 
 with Picamera2() as picam2:
     frame = int(time.time())
@@ -18,14 +26,10 @@ with Picamera2() as picam2:
     time.sleep(1)
     print("Preview started")
 
-    # Turn on full-time autofocus.
-    picam2.set_controls({"AfMode": 2 ,"AfTrigger": 0})
-
     # Wait for button press. When pressed, take picture.
     while True:
         button.wait_for_press()
-        filename = '/home/pi/Pictures/%03d.jpg' % frame
+        filename = os.path.join(picture_dir, f'{frame:03d}.jpg')  # Ensure proper path and filename
         picam2.switch_mode_and_capture_file(capture_config, filename)
-        print ('Image captured: ' + filename)
+        print(f'Image captured: {filename}')
         frame += 1
-
