@@ -12,23 +12,29 @@ root = tk.Tk()
 root.attributes('-fullscreen', True)
 root.configure(bg="white")
 
+# Get screen size
+screen_width = root.winfo_screenwidth()
+screen_height = root.winfo_screenheight()
+
+# Dynamic scaling based on screen size
+time_font_size = int(screen_height * 0.12)
+date_font_size = int(screen_height * 0.05)
+label_font_size = int(screen_height * 0.03)
+button_width = int(screen_width * 0.1)
+button_height = int(screen_height * 0.1)
+button_padding = int(screen_width * 0.02)
+
 # Use Roboto Mono if available
 available_fonts = tkfont.families()
 font_family = "Roboto Mono" if "Roboto Mono" in available_fonts else "Courier"
 
-# Smaller font sizes
-time_font_size = 50
-date_font_size = 20
-label_font_size = 10
-button_size = 60  # pixels
-
 # Time label
 time_label = tk.Label(root, font=(font_family, time_font_size), fg="black", bg="white")
-time_label.pack(pady=(40, 0))
+time_label.pack(pady=(screen_height * 0.05, 0))
 
 # Date label
 date_label = tk.Label(root, font=(font_family, date_font_size), fg="black", bg="white")
-date_label.pack(pady=(5, 30))
+date_label.pack(pady=(screen_height * 0.01, screen_height * 0.05))
 
 # Icons and buttons
 frame = tk.Frame(root, bg="white")
@@ -55,22 +61,23 @@ buttons = [
 
 for name, command in buttons:
     icon_frame = tk.Frame(frame, bg="white")
-    icon_frame.pack(side="left", padx=10)
+    icon_frame.pack(side="left", padx=button_padding)
 
     button = tk.Button(
         icon_frame,
-        width=button_size,
-        height=button_size,
+        width=button_width,
+        height=button_height,
         bg="black",
         activebackground="gray",
         relief="flat",
         command=command
     )
-    button.config(width=5, height=2)  # Smaller button size
+    # Tkinter buttons size in text units, so we adjust:
+    button.config(width=6, height=3)
     button.pack()
 
     label = tk.Label(icon_frame, text=name, font=(font_family, label_font_size), fg="black", bg="white")
-    label.pack(pady=3)
+    label.pack(pady=5)
 
 def update_time():
     current_time = time.strftime("%H:%M")
@@ -84,11 +91,11 @@ update_time()
 # Escape key to exit
 root.bind("<Escape>", lambda e: root.destroy())
 
-# Optional small exit button at the top-right corner
+# Small exit button
 exit_button = tk.Button(
     root,
     text="X",
-    font=(font_family, 10),
+    font=(font_family, label_font_size),
     command=root.destroy,
     bg="red",
     fg="white",
