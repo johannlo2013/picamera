@@ -3,9 +3,10 @@ from tkinter import font as tkfont
 import subprocess
 import time
 import os
+import threading
 
 # Paths
-CAMERA_SCRIPT_PATH = os.path.join("/home/mashedpotatoes/picamera/camera.py")
+CAMERA_SCRIPT_PATH = "/home/mashedpotatoes/picamera/camera.py"
 
 # Main app window
 root = tk.Tk()
@@ -40,17 +41,31 @@ date_label.pack(pady=(screen_height * 0.01, screen_height * 0.05))
 frame = tk.Frame(root, bg="white")
 frame.pack()
 
+
+# Helper to run external commands and restore window
+def run_and_return(command):
+    def task():
+        root.withdraw()
+        subprocess.call(command)
+        root.deiconify()
+    threading.Thread(target=task).start()
+
+
 def open_camera():
-    subprocess.Popen(["python3", CAMERA_SCRIPT_PATH])
+    run_and_return(["python3", CAMERA_SCRIPT_PATH])
+
 
 def open_internet():
-    subprocess.Popen(["chromium-browser"])
+    run_and_return(["chromium-browser"])
+
 
 def open_photos():
-    subprocess.Popen(["pcmanfm"])
+    run_and_return(["pcmanfm"])
+
 
 def open_terminal():
-    subprocess.Popen(["lxterminal"])
+    run_and_return(["lxterminal"])
+
 
 buttons = [
     ("Camera", open_camera),
@@ -72,12 +87,12 @@ for name, command in buttons:
         relief="flat",
         command=command
     )
-    # Tkinter buttons size in text units, so we adjust:
-    button.config(width=6, height=3)
+    button.config(width=6, height=3)  # Tkinter uses text units, not pixels
     button.pack()
 
     label = tk.Label(icon_frame, text=name, font=(font_family, label_font_size), fg="black", bg="white")
     label.pack(pady=5)
+
 
 def update_time():
     current_time = time.strftime("%H:%M")
@@ -85,6 +100,7 @@ def update_time():
     time_label.config(text=current_time)
     date_label.config(text=current_date)
     root.after(60000, update_time)
+
 
 update_time()
 
