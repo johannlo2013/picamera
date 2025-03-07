@@ -53,6 +53,16 @@ buttons = [
     ("Terminal", open_terminal),
 ]
 
+exit_button = tk.Button(
+    root,
+    text="Exit",
+    font=(font_family, 12),
+    command=root.destroy,
+    bg="red",
+    fg="white"
+)
+exit_button.place(relx=0.95, rely=0.05, anchor="ne")
+
 for name, command in buttons:
     icon_frame = tk.Frame(frame, bg="white")
     icon_frame.pack(side="left", padx=20)
