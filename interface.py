@@ -5,7 +5,7 @@ import time
 import os
 
 # Paths
-CAMERA_SCRIPT_PATH = os.path.join("camera_script.py")
+CAMERA_SCRIPT_PATH = os.path.join("/home/mashedpotatoes/picamera/camera.py")
 
 # Main app window
 root = tk.Tk()
@@ -41,8 +41,6 @@ frame = tk.Frame(root, bg="white")
 frame.pack()
 
 def open_camera():
-    subprocess.Popen(["cd /"])
-    subprocess.Popen(["cd /home/mashedpotatoes/picamera/"])
     subprocess.Popen(["python3", CAMERA_SCRIPT_PATH])
 
 def open_internet():
