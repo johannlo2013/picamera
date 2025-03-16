@@ -1,4 +1,4 @@
-# picamera interface 0
+# rpicam v0
 ## materials
 - waveshare 3.5 inch touchscreen
 - raspberry pi 4b or later
