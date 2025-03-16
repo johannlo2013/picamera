@@ -8,44 +8,42 @@ import os
 import RPi.GPIO as GPIO
 import subprocess
 
-# Setup GPIO for button input (using pin 21)
 BUTTON_PIN = 21
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-# Ensure media directory exists
 MEDIA_DIR = "media"
 os.makedirs(MEDIA_DIR, exist_ok=True)
 
 def select_camera():
-    selection_window = tk.Tk()
-    selection_window.title("Select Camera")
-    selection_window.geometry("480x360")
-    selection_window.configure(bg='black')
+    camwindow = tk.Tk()
+    camwindow.title("Select Camera")
+    camwindow.geometry("480x360")
+    camwindow.configure(bg='black')
     
     cameras = Picamera2.global_camera_info()
     if not cameras:
         print("No cameras detected.")
-        selection_window.destroy()
+        camwindow.destroy()
         exit()
     
     selected_camera = tk.IntVar()
     
-    tk.Label(selection_window, text="Select a Camera", font=("Inter", 16), fg="white", bg="black").pack(pady=10)
+    tk.Label(camwindow, text="Select a Camera", font=("Inter", 16), fg="white", bg="black").pack(pady=10)
     
     for i, cam in enumerate(cameras):
         cam_name = cam.get('ModelName', f'Unknown Camera {i}')
-        tk.Radiobutton(selection_window, text=cam_name, variable=selected_camera, value=i, font=("Inter", 14), fg="white", bg="black", selectcolor='gray').pack(anchor='w', padx=20)
+        tk.Radiobutton(camwindow, text=cam_name, variable=selected_camera, value=i, font=("Inter", 14), fg="white", bg="black", selectcolor='gray').pack(anchor='w', padx=20)
     
-    def confirm_selection():
-        selection_window.destroy()
+    def confirm():
+        camwindow.destroy()
     
-    def close_window():
-        selection_window.destroy()
+    def close():
+        camwindow.destroy()
         exit()
     
-    tk.Button(selection_window, text="Confirm", font=("Inter", 16), command=confirm_selection).pack(pady=20)
-    selection_window.mainloop()
+    tk.Button(camwindow, text="Confirm", font=("Inter", 16), command=confirm).pack(pady=20)
+    camwindow.mainloop()
     
     return selected_camera.get()
 
@@ -75,19 +73,19 @@ class CameraApp:
         
         self.clock_label = tk.Label(self.button_frame, text="", font=("Inter", 16), fg="white", bg="black")
         self.clock_label.pack(side=tk.LEFT, padx=10)
-        self.clock_label.bind("<Button-1>", self.handle_clock_tap)
+        self.clock_label.bind("<Button-1>", self.clocktap)
         
-        self.video_button = tk.Button(self.button_frame, text="Record", font=("Inter", 14), command=self.toggle_video)
+        self.video_button = tk.Button(self.button_frame, text="Record", font=("Inter", 14), command=self.togglevid)
         self.video_button.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
         
         self.close_button = tk.Button(self.button_frame, text="Exit", font=("Inter", 14), fg="white", bg="red", command=root.quit)
         self.close_button.pack(side=tk.RIGHT, expand=True, fill=tk.BOTH)
         
-        self.update_preview()
-        self.update_clock()
-        self.setup_gpio()
+        self.update()
+        self.updclock()
+        self.setupgpio()
     
-    def update_preview(self):
+    def update(self):
         frame = self.picam2.capture_array()
         image = Image.fromarray(frame)
         image = image.resize((480, 270))
@@ -95,41 +93,41 @@ class CameraApp:
         self.canvas.config(image=self.photo)
         self.root.after(100, self.update_preview)
     
-    def update_clock(self):
+    def updclock(self):
         current_time = datetime.datetime.now().strftime("%H:%M:%S")
         self.clock_label.config(text=current_time)
         self.root.after(1000, self.update_clock)
     
-    def capture_photo(self):
+    def capture(self):
         filename = os.path.join(MEDIA_DIR, f"photo_{int(time.time())}.jpg")
         self.picam2.capture_file(filename)
         print(f"Photo saved: {filename}")
     
-    def toggle_video(self):
+    def togglevid(self):
         if self.video_recording:
-            self.stop_recording()
+            self.stoprec()
         else:
-            self.start_recording()
+            self.startrec()
     
-    def start_recording(self):
+    def startrec(self):
         self.video_filename = os.path.join(MEDIA_DIR, f"video_{int(time.time())}.mp4")
         self.picam2.start_and_record_video(self.video_filename)
         self.video_recording = True
         print(f"Recording video: {self.video_filename}")
     
-    def stop_recording(self):
+    def stoprec(self):
         self.picam2.stop_recording()
         self.video_recording = False
         print(f"Video saved: {self.video_filename}")
         self.picam2.start()
     
-    def button_callback(self, channel):
-        self.capture_photo()
+    def callback(self, channel):
+        self.capture()
 
-    def setup_gpio(self):
-        GPIO.add_event_detect(BUTTON_PIN, GPIO.FALLING, callback=self.button_callback, bouncetime=300)
+    def setupgpio(self):
+        GPIO.add_event_detect(BUTTON_PIN, GPIO.FALLING, callback=self.callback, bouncetime=300)
     
-    def handle_clock_tap(self, event):
+    def clocktap(self, event):
         self.clock_tap_count += 1
         if self.clock_tap_count >= 5:
             self.clock_tap_count = 0
