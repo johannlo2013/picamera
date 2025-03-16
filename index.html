@@ -8,18 +8,14 @@
                 text-align: center;
                 font-family: 'Inter';
             }
-            pre {
-                background: rgba(0, 0, 0, 0.3);
-                color: #fff;
-                border-radius: .4cm;
-                padding: 8px 10px;
-                width: 10cm;
-            }
-            code {
-                font-size: 11px;
-                line-height: 1.6;
-            }
         </style>
+        <script>
+            function clipboard() {
+// Copy the text inside the text field
+navigator.clipboard.writeText("git clone https://github.com/johannlo2013/picamera.git | echo 'cd / | cd /home/mashedpotatoes/picamera | python3 init.py' > ~/Desktop/init.sh");
+
+            }
+        </script>
     </head>
     <body>
         <br>
@@ -27,7 +23,7 @@
         <br>
         <br>
         <h2>rpicam v0</h2>
-        
         <p><pre><code class="language-bash" data-lang="bash">git clone https://github.com/johannlo2013/picamera.git | echo "cd / | cd /home/mashedpotatoes/picamera | python3 init.py" > ~/Desktop/init.sh</span></code></pre></p>
+        <button>Copy to clipboard</button>
     </body>
 </html>
