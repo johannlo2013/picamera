@@ -48,4 +48,4 @@ python3 init.py
 - click the wired button to snap a photo
 - click the record button once to start and stop recording
 - the exit button is self-explanatory
-- click the time button 5 times to open the chromium browser (for students bringing cameras who want to watch youtube lol)
+- click the time button 5 times to open the applications menu
