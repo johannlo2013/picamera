@@ -1,3 +1,7 @@
+# rpicam v0 interface
+# designed to run on raspberry pi to control camera
+# johann lo (johannlo@thesunbeaming.co)
+
 import tkinter as tk
 from tkinter import ttk, messagebox
 from picamera2 import Picamera2
@@ -49,7 +53,7 @@ class CameraConfig:
                         if hasattr(self, key):
                             setattr(self, key, value)
         except Exception as e:
-            logging.error(f"Failed to load config: {e}")
+            logging.error(f"failed to load config: {e}")
 
     def save_config(self):
         try:
@@ -60,7 +64,7 @@ class CameraConfig:
             with open(self.CONFIG_FILE, 'w') as f:
                 json.dump(config_dict, f)
         except Exception as e:
-            logging.error(f"Failed to save config: {e}")
+            logging.error(f"failed to save config: {e}")
 
     def setup_gpio(self):
         GPIO.setmode(GPIO.BCM)
@@ -151,7 +155,7 @@ class CameraApp:
         self.start_update_threads()
 
     def setup_ui(self):
-        self.root.title("Camera App")
+        self.root.title("rpicam v0")
         self.root.attributes('-fullscreen', True)
         self.root.configure(bg=self.config.THEME['bg'])
 
@@ -245,9 +249,9 @@ class CameraApp:
             )
             self.camera.configure(preview_config)
             self.camera.start()
-            logging.info(f"Camera {self.camera_index} initialized successfully")
+            logging.info(f"camera {self.camera_index} initialized successfully")
         except Exception as e:
-            logging.error(f"Camera initialization failed: {e}")
+            logging.error(f"camera initialization failed: {e}")
             messagebox.showerror("Error", "Failed to initialize camera")
             self.root.destroy()
 
@@ -267,7 +271,7 @@ class CameraApp:
                     self.preview_label.image = photo
                 time.sleep(1/self.config.FPS)
             except Exception as e:
-                logging.error(f"Preview update failed: {e}")
+                logging.error(f"preview update failed: {e}")
                 time.sleep(1)
 
     def update_clock(self):
@@ -291,20 +295,20 @@ class CameraApp:
     
     def launch_browser(self):
         try:
-            subprocess.Popen(['lxpanelctl menu'])
-            logging.info("Launched Chromium browser")
+            subprocess.Popen(['lxpanelctl', 'menu'])
+            logging.info("lxpanelctl menu launched")
         except Exception as e:
-            logging.error(f"Failed to launch browser: {e}")
-            self.show_notification("Failed to launch browser", error=True)
+            logging.error(f"failed to launch menu: {e}")
+            self.show_notification("Failed to launch menu", error=True)
 
     def capture_photo(self):
         try:
             filename = self.config.MEDIA_DIR / f"photo_{int(time.time())}.jpg"
             self.camera.capture_file(str(filename))
-            logging.info(f"Photo captured: {filename}")
+            logging.info(f"photo captured: {filename}")
             self.show_notification("Photo captured successfully")
         except Exception as e:
-            logging.error(f"Photo capture failed: {e}")
+            logging.error(f"photo capture failed: {e}")
             self.show_notification("Failed to capture photo", error=True)
 
     def toggle_recording(self):
@@ -320,9 +324,9 @@ class CameraApp:
             self.video_recording = True
             self.record_btn.configure(text="Stop Recording")
             self.recording_indicator.configure(fg=self.config.THEME['warning'])
-            logging.info(f"Started recording: {self.video_filename}")
+            logging.info(f"started recording: {self.video_filename}")
         except Exception as e:
-            logging.error(f"Failed to start recording: {e}")
+            logging.error(f"failed to start recording: {e}")
             self.show_notification("Failed to start recording", error=True)
 
     def stop_recording(self):
@@ -333,7 +337,7 @@ class CameraApp:
             self.video_recording = False
             self.record_btn.configure(text="Start Recording")
             self.recording_indicator.configure(fg=self.config.THEME['bg'])
-            logging.info(f"Stopped recording: {self.video_filename}")
+            logging.info(f"stopped recording: {self.video_filename}")
 
             preview_config = self.camera.create_preview_configuration(
                 main={"size": self.config.PREVIEW_RESOLUTION, "format": "RGB888"},
@@ -344,12 +348,12 @@ class CameraApp:
             
             self.show_notification("Recording saved successfully")
         except Exception as e:
-            logging.error(f"Failed to stop recording: {e}")
+            logging.error(f"failed to stop recording: {e}")
             self.show_notification("Failed to stop recording", error=True)
             try:
                 self.initialize_camera()
             except Exception as recovery_error:
-                logging.error(f"Failed to recover camera: {recovery_error}")
+                logging.error(f"failed to recover camera: {recovery_error}")
 
     def switch_camera(self):
         self.camera.stop()
@@ -374,7 +378,7 @@ class CameraApp:
         self.root.after(2000, notification.destroy)
 
     def shutdown(self):
-        if messagebox.askyesno("Confirm Exit", "Are you sure you want to exit?"):
+        if messagebox.askyesno("Confirm Shutdown", "Are you sure you want to exit?"):
             self.camera.stop()
             GPIO.cleanup()
             self.root.destroy()
@@ -390,7 +394,7 @@ def main():
         app = CameraApp(root, camera_index, config)
         root.mainloop()
     except Exception as e:
-        logging.critical(f"Application crashed: {e}")
+        logging.critical(f"application crashed: {e}")
     finally:
         GPIO.cleanup()
 
