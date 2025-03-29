@@ -295,11 +295,12 @@ class CameraApp:
     
     def launch_browser(self):
         try:
-            subprocess.Popen(['lxpanelctl', 'menu'])
-            logging.info("lxpanelctl menu launched")
+            subprocess.Popen(["matchbox-keyboard"])
+            logging.info("vlc media player launched")
+            quit()
         except Exception as e:
-            logging.error(f"failed to launch menu: {e}")
-            self.show_notification("Failed to launch menu", error=True)
+            logging.error(f"failed to launch vlc: {e}")
+            self.show_notification("Failed to launch player", error=True)
 
     def capture_photo(self):
         try:
